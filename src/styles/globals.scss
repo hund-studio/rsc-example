@@ -1,0 +1,21 @@
+html,
+body {
+    margin: 0;
+    background: whitesmoke;
+}
+
+.dnd {
+    &-page {
+        max-width: 1200px;
+        margin: auto;
+        padding: 10px;
+    }
+
+    table {
+        border-collapse: collapse;
+
+        thead {
+            text-align: left;
+        }
+    }
+}

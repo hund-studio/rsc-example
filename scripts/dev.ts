@@ -1,6 +1,7 @@
-import { build, resolveSrc } from "./lib/build.ts";
+import { client, resolveBuild, resolveSrc, server } from "./lib/build.ts";
 import chokidar from "chokidar";
 import nodemon, { Nodemon } from "nodemon";
+import * as rimraf from "rimraf";
 
 let nodemonInstance: Nodemon | null = null;
 
@@ -25,22 +26,21 @@ const nodemonTrigger = () => {
     }
 };
 
-const compile = async () => {
-    await build();
-    nodemonTrigger();
-};
-
 const exec = async () => {
-    await compile();
+    rimraf.sync(resolveBuild());
+    await server();
+    const { rebuild } = await client();
+    nodemonTrigger();
     chokidar
         .watch("src/**/*", {
             persistent: true,
             ignoreInitial: true,
         })
-        .on("all", async (file, path) => {
-            console.log(path);
+        .on("all", async () => {
             console.log("Files changed, rebuilding...");
-            await compile();
+            await server();
+            rebuild();
+            nodemonTrigger();
         });
 };
 
